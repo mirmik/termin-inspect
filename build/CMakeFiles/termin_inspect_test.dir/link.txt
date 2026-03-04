@@ -1,1 +1,0 @@
-/usr/bin/cc CMakeFiles/termin_inspect_test.dir/tests/test_main.c.o -o bin/termin_inspect_test  -Wl,-rpath,/home/mirmik/project/termin-env/termin-inspect/build/bin:/usr/local/lib bin/libtermin_inspect.so /usr/local/lib/libtermin_base.so 

@@ -1,2 +1,0 @@
-termin_inspect_test 1 0.000925595
----

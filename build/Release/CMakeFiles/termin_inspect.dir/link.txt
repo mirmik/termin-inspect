@@ -1,1 +1,0 @@
-/usr/bin/c++ -fPIC -O3 -DNDEBUG -shared -Wl,-soname,libtermin_inspect.so -o bin/libtermin_inspect.so CMakeFiles/termin_inspect.dir/src/tc_inspect.c.o CMakeFiles/termin_inspect.dir/src/tc_kind.c.o CMakeFiles/termin_inspect.dir/src/tc_inspect_core_instance.cpp.o CMakeFiles/termin_inspect.dir/src/tc_kind_cpp.cpp.o  -Wl,-rpath,/usr/local/lib: /usr/local/lib/libtermin_base.so 
