@@ -54,46 +54,46 @@
 
 ## 5. Python inspect/kind abstraction cleanup
 
-- [ ] Отделить generic Python bridge от scene-specific mapping.
-- [ ] Убрать из core Python inspect bridge прямой доступ к `tc_component`/`tc->body`.
-- [ ] Ввести adapter callback/object resolver для:
+- [x] Отделить generic Python bridge от scene-specific mapping.
+- [x] Убрать из core Python inspect bridge прямой доступ к `tc_component`/`tc->body`.
+- [x] Ввести adapter callback/object resolver для:
   - object unwrap
   - action invocation target
-- [ ] Оставить nanobind module wiring, завязанный на `termin._native`, в consumer слое.
+- [x] Оставить nanobind module wiring, завязанный на `termin._native`, в consumer слое.
 
 Критерий:
 - Python core bridge работает с абстрактным `void*`/`PyObject*` без include/use `core/tc_component.h`.
 
 ## 6. Initialization decoupling
 
-- [ ] Убрать склейку “всё сразу” через `tc_init_full()`.
-- [ ] Разделить init-функции по слоям:
+- [x] Убрать склейку “всё сразу” через `tc_init_full()`.
+- [x] Разделить init-функции по слоям:
   - inspect/kind core init
   - scene adapter init
   - render adapter init
   - python adapter init
-- [ ] Явно определить порядок вызова init в `termin` startup.
+- [x] Явно определить порядок вызова init в `termin` startup.
 
 Критерий:
 - core init не вызывает регистрацию scene/render domain kinds автоматически.
 
 ## 7. Adapter compatibility window
 
-- [ ] Сохранить текущие внешние API как thin wrappers:
+- [x] Сохранить текущие внешние API как thin wrappers:
   - `tc_component_inspect_*`
   - `tc_pass_inspect_*`
   - C#/Python FFI входы
-- [ ] Перевести реализации wrappers на новый generic core API.
-- [ ] Зафиксировать deprecation notes (без fallback-слоёв в core).
+- [x] Перевести реализации wrappers на новый generic core API.
+- [x] Зафиксировать deprecation notes (без fallback-слоёв в core).
 
 Критерий:
 - существующие callsites в `termin`/C#/Python работают без массовой одномоментной переписи.
 
 ## 8. Singleton/link topology guardrails
 
-- [ ] Определить единый binary owner для `InspectRegistry` и `KindRegistryCpp`.
-- [ ] Проверить, что при линковке `termin-inspect` + adapters не возникает дублей singleton.
-- [ ] Добавить smoke-проверку на shared-lib topology.
+- [x] Определить единый binary owner для `InspectRegistry` и `KindRegistryCpp`.
+- [x] Проверить, что при линковке `termin-inspect` + adapters не возникает дублей singleton.
+- [x] Добавить smoke-проверку на shared-lib topology.
 
 Критерий:
 - runtime видит единые registry instance во всех потребителях.
@@ -101,12 +101,12 @@
 ## 9. Test baseline before extraction
 
 - [ ] C tests:
-  - `tc_kind_parse`
-  - inspect/kind dispatcher with mock lang registries
+  - [x] `tc_kind_parse`
+  - [x] inspect/kind dispatcher with mock lang registries
 - [ ] C++ tests:
-  - `InspectRegistry` add/get/set
-  - inheritance field traversal
-  - generic action callback invocation
+  - [x] `InspectRegistry` add/get/set
+  - [x] inheritance field traversal
+  - [x] generic action callback invocation
 - [ ] Python tests:
   - register fields + get/set/serialize/deserialize для generic объектов
   - lazy list handler
@@ -120,9 +120,9 @@
 
 ## 10. Execution gate (go/no-go)
 
-- [ ] Все пункты 1-6 закрыты.
-- [ ] Есть совместимость через adapter wrappers (пункт 7).
-- [ ] Зафиксирован владелец singleton (пункт 8).
+- [x] Все пункты 1-6 закрыты.
+- [x] Есть совместимость через adapter wrappers (пункт 7).
+- [x] Зафиксирован владелец singleton (пункт 8).
 - [ ] Есть зелёный тестовый baseline (пункт 9).
 
 После этого можно начинать перенос кода в `termin-inspect` по этапам `inspect_kind_extraction_plan.md`.
