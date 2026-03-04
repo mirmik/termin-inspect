@@ -121,12 +121,29 @@ endif()
 
 if(TI_BUILD_TESTS)
     enable_testing()
-    add_executable(termin_inspect_test tests/test_main.c)
-    target_link_libraries(termin_inspect_test PRIVATE termin_inspect)
-    add_test(NAME termin_inspect_test COMMAND termin_inspect_test)
-    set_target_properties(termin_inspect_test PROPERTIES
+    add_executable(termin_inspect_c_test tests/test_main.c)
+    target_link_libraries(termin_inspect_c_test PRIVATE termin_inspect)
+    add_test(NAME termin_inspect_c_test COMMAND termin_inspect_c_test)
+    set_target_properties(termin_inspect_c_test PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
     )
+
+    add_executable(termin_inspect_cpp_test tests/test_cpp_inspect.cpp)
+    target_link_libraries(termin_inspect_cpp_test PRIVATE termin_inspect)
+    add_test(NAME termin_inspect_cpp_test COMMAND termin_inspect_cpp_test)
+    set_target_properties(termin_inspect_cpp_test PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    )
+
+    if(TI_BUILD_PYTHON)
+        add_executable(termin_inspect_python_test tests/test_python_inspect.cpp)
+        target_link_libraries(termin_inspect_python_test PRIVATE termin_inspect Python::Python nanobind-static)
+        target_include_directories(termin_inspect_python_test PRIVATE ${nanobind_INCLUDE_DIR})
+        add_test(NAME termin_inspect_python_test COMMAND termin_inspect_python_test)
+        set_target_properties(termin_inspect_python_test PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+        )
+    endif()
 endif()
 
 include(CMakePackageConfigHelpers)
