@@ -1,26 +1,32 @@
 # termin-inspect
 
-`termin-inspect` — библиотека inspect/kind подсистемы, вынесенная из `termin`.
+`termin-inspect` — библиотека runtime-рефлексии и сериализации для движка Termin.
 
 Пакет объединяет:
-- C dispatcher для inspect (`tc_inspect_*`);
-- C dispatcher для kind (`tc_kind_*`);
-- C++ runtime (`InspectRegistry`, `KindRegistryCpp`);
-- Python bridge (nanobind-слой для Python-классов и kind handlers).
+
+- **C dispatcher** — единый API для inspect (`tc_inspect_*`) и kind (`tc_kind_*`).
+- **C++ runtime** — `InspectRegistry` (поля, наследование, get/set) и `KindRegistryCpp` (сериализация типов).
+- **Python bridge** — nanobind-слой для Python-классов и kind handlers.
 
 ## Рекомендуемый маршрут
 
-1. [Быстрый старт](getting-started.md)
-2. [Архитектура](architecture.md)
-3. [Inspect Dispatcher](inspect-dispatcher.md)
-4. [Kind System](kind-system.md)
-5. [C++ API](cpp-api.md)
-6. [Python bridge](python-bridge.md)
-7. [Интеграция](integration.md)
+| #  | Раздел | Описание |
+|----|--------|----------|
+| 1  | [Быстрый старт](getting-started.md) | Сборка и проверка |
+| 2  | [Архитектура](architecture.md) | Слои: C, C++, Python |
+| 3  | [Inspect Dispatcher](inspect-dispatcher.md) | Get/set/serialize через language vtable |
+| 4  | [Kind System](kind-system.md) | Языковые реестры типов |
+| 5  | [C++ API](cpp-api.md) | InspectRegistry, KindRegistryCpp, макросы |
+| 6  | [Python bridge](python-bridge.md) | Регистрация Python-классов |
+| 7  | [Интеграция](integration.md) | CMake, runtime, порядок инициализации |
+| 8  | [API Reference](api.md) | Публичные заголовки и точки входа |
+| 9  | [Ограничения и gotchas](gotchas.md) | Подводные камни |
 
 ## Scope
 
-`termin-inspect` не зависит от `termin-scene`/`termin-graphics`/`termin-core`.
-Базовые зависимости:
-- `termin_base` (типы, `tc_value`, логирование);
-- опционально Python + nanobind (если включен `TI_BUILD_PYTHON`).
+`termin-inspect` не зависит от `termin-scene`, `termin-graphics` или `termin-core`.
+
+Зависимости:
+
+- `termin_base` (типы, `tc_value`, логирование)
+- опционально Python + nanobind (если включён `TI_BUILD_PYTHON`)
