@@ -6,48 +6,48 @@
 
 ## 1. API boundary cleanup (C layer)
 
-- [ ] Разделить `tc_inspect.h` на core API и adapter API.
-- [ ] В core-хедере оставить только generic:
+- [x] Разделить `tc_inspect.h` на core API и adapter API.
+- [x] В core-хедере оставить только generic:
   - `tc_inspect_*`
   - `tc_kind_*`
   - `tc_kind_parse`
-- [ ] Убрать из core-хедера:
+- [x] Убрать из core-хедера:
   - `tc_component_inspect_*`
   - `tc_pass_inspect_*`
   - `tc_component_set_field_*`/`tc_component_get_field_*`
   - включения `tc_mesh.h`/`tc_material.h`
-- [ ] Вынести component/pass/FFI функции в adapter headers (scene/render level).
+- [x] Вынести component/pass/FFI функции в adapter headers (scene/render level).
 
 Критерий:
 - core header не содержит зависимостей на `tc_component`, `tc_pass`, `tc_mesh`, `tc_material`.
 
 ## 2. C++ inspect action abstraction
 
-- [ ] Убрать component-centric тип action callback:
+- [x] Убрать component-centric тип action callback:
   - заменить `std::function<void(tc_component*)>` на generic callback.
-- [ ] Ввести `InspectContext` (scene handle + user context).
-- [ ] Обновить `InspectFieldInfo::action` и вызовы `action_field(...)`.
-- [ ] Переписать `INSPECT_BUTTON` macro на generic вариант (без обязательного `CxxComponent::from_tc` в core).
+- [x] Ввести `InspectContext` (scene handle + user context).
+- [x] Обновить `InspectFieldInfo::action` и вызовы `action_field(...)`.
+- [x] Переписать `INSPECT_BUTTON` macro на generic вариант (без обязательного `CxxComponent::from_tc` в core).
 
 Критерий:
 - в core C++ inspect runtime нет прямой зависимости action-механизма от `tc_component`.
 
 ## 3. Split mixed runtime file (`tc_inspect_instance.cpp`)
 
-- [ ] Разделить текущий mixed файл на:
+- [x] Разделить текущий mixed файл на:
   - core vtable wiring / registry bootstrap
   - scene component adapter
   - render pass adapter
-- [ ] Из core части убрать include-ы на render (`frame_pass`) и domain resources.
+- [x] Из core части убрать include-ы на render (`frame_pass`) и domain resources.
 
 Критерий:
 - core inspect C++ файл не включает `render/tc_pass.h`, `frame_pass.hpp`, mesh/material registry API.
 
 ## 4. KindRegistryCpp domain cleanup
 
-- [ ] Убрать auto-registration `tc_mesh`/`tc_material` из `KindRegistryCpp::instance()`.
-- [ ] Оставить в core только builtin kinds (bool/int/float/double/string/vec3/quat + универсальные list-паттерны, если есть).
-- [ ] Перенести регистрацию domain kinds в consumer adapters (scene/render layer).
+- [x] Убрать auto-registration `tc_mesh`/`tc_material` из `KindRegistryCpp::instance()`.
+- [x] Оставить в core только builtin kinds (bool/int/float/double/string/vec3/quat + универсальные list-паттерны, если есть).
+- [x] Перенести регистрацию domain kinds в consumer adapters (scene/render layer).
 
 Критерий:
 - `tc_kind_cpp` в core не включает `termin/mesh/*` и `termin/material/*`.
