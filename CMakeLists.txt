@@ -46,33 +46,26 @@ set(TI_HEADERS
 find_package(termin_base REQUIRED)
 
 if(TI_BUILD_PYTHON)
-    if(WIN32)
-        execute_process(
-            COMMAND python -m nanobind --include_dir
-            OUTPUT_VARIABLE nanobind_INCLUDE_DIR
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-        )
-    else()
-        execute_process(
-            COMMAND python3 -m nanobind --include_dir
-            OUTPUT_VARIABLE nanobind_INCLUDE_DIR
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-        )
+    if(NOT Python_EXECUTABLE)
+        if(WIN32)
+            set(Python_EXECUTABLE "python")
+        else()
+            set(Python_EXECUTABLE "python3")
+        endif()
     endif()
-    find_package(Python COMPONENTS Interpreter Development REQUIRED)
-    if(WIN32)
-        execute_process(
-            COMMAND python -m nanobind --cmake_dir
-            OUTPUT_VARIABLE nanobind_DIR
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-        )
-    else()
-        execute_process(
-            COMMAND python3 -m nanobind --cmake_dir
-            OUTPUT_VARIABLE nanobind_DIR
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-        )
-    endif()
+
+    find_package(Python 3.8 COMPONENTS Interpreter Development REQUIRED)
+
+    execute_process(
+        COMMAND ${Python_EXECUTABLE} -m nanobind --include_dir
+        OUTPUT_VARIABLE nanobind_INCLUDE_DIR
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+    execute_process(
+        COMMAND ${Python_EXECUTABLE} -m nanobind --cmake_dir
+        OUTPUT_VARIABLE nanobind_DIR
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
     find_package(nanobind CONFIG REQUIRED)
     nanobind_build_library(nanobind-static)
 endif()
@@ -106,7 +99,9 @@ endif()
 
 target_link_libraries(termin_inspect PUBLIC tcbase::termin_base)
 if(TI_BUILD_PYTHON)
-    target_link_libraries(termin_inspect PRIVATE nanobind-static Python::Python)
+    # Python C-API symbols are referenced from libtermin_inspect itself,
+    # so Python must be visible for downstream link steps as well.
+    target_link_libraries(termin_inspect PRIVATE nanobind-static PUBLIC Python::Python)
 endif()
 
 if(WIN32)
