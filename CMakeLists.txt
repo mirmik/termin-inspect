@@ -9,7 +9,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 option(TI_BUILD_SHARED "Build shared library" ON)
 option(TI_BUILD_TESTS "Build tests" ON)
 option(TI_BUILD_CPP "Build C++ inspect/kind core runtime" ON)
-option(TI_BUILD_PYTHON "Build Python/nanobind inspect bridge" ON)
+option(TERMIN_INSPECT_BUILD_PYTHON "Build Python/nanobind inspect bridge" OFF)
+# Backward-compatible alias
+if(DEFINED TI_BUILD_PYTHON)
+    set(TERMIN_INSPECT_BUILD_PYTHON ${TI_BUILD_PYTHON})
+endif()
 
 set(TI_SOURCES
     src/tc_inspect.c
@@ -24,13 +28,10 @@ if(TI_BUILD_CPP)
     )
 endif()
 
-set(TI_PY_SOURCES)
-if(TI_BUILD_PYTHON)
-    list(APPEND TI_PY_SOURCES
-        src/tc_kind_python_instance.cpp
-        src/tc_inspect_python.cpp
-    )
-endif()
+set(TI_PY_SOURCES
+    src/tc_kind_python_instance.cpp
+    src/tc_inspect_python.cpp
+)
 
 set(TI_HEADERS
     include/tc_types.h
@@ -45,7 +46,7 @@ set(TI_HEADERS
 
 find_package(termin_base REQUIRED)
 
-if(TI_BUILD_PYTHON)
+if(TERMIN_INSPECT_BUILD_PYTHON)
     if(NOT Python_EXECUTABLE)
         if(WIN32)
             set(Python_EXECUTABLE "python")
@@ -71,10 +72,10 @@ if(TI_BUILD_PYTHON)
 endif()
 
 if(TI_BUILD_SHARED)
-    add_library(termin_inspect SHARED ${TI_SOURCES} ${TI_CPP_SOURCES} ${TI_PY_SOURCES} ${TI_HEADERS})
+    add_library(termin_inspect SHARED ${TI_SOURCES} ${TI_CPP_SOURCES} ${TI_HEADERS})
     target_compile_definitions(termin_inspect PRIVATE TC_EXPORTS TERMIN_INSPECT_CPP_EXPORTS)
 else()
-    add_library(termin_inspect STATIC ${TI_SOURCES} ${TI_CPP_SOURCES} ${TI_PY_SOURCES} ${TI_HEADERS})
+    add_library(termin_inspect STATIC ${TI_SOURCES} ${TI_CPP_SOURCES} ${TI_HEADERS})
     target_compile_definitions(termin_inspect PRIVATE TERMIN_INSPECT_CPP_EXPORTS)
 endif()
 
@@ -93,15 +94,42 @@ target_include_directories(termin_inspect
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
 )
-if(TI_BUILD_PYTHON)
-    target_include_directories(termin_inspect PRIVATE ${nanobind_INCLUDE_DIR})
-endif()
-
 target_link_libraries(termin_inspect PUBLIC tcbase::termin_base)
-if(TI_BUILD_PYTHON)
-    # Python C-API symbols are referenced from libtermin_inspect itself,
-    # so Python must be visible for downstream link steps as well.
-    target_link_libraries(termin_inspect PRIVATE nanobind PUBLIC Python::Python)
+
+if(TERMIN_INSPECT_BUILD_PYTHON)
+    if(TI_BUILD_SHARED)
+        add_library(termin_inspect_python SHARED ${TI_PY_SOURCES})
+        target_compile_definitions(termin_inspect_python PRIVATE TC_EXPORTS TERMIN_INSPECT_CPP_EXPORTS)
+    else()
+        add_library(termin_inspect_python STATIC ${TI_PY_SOURCES})
+        target_compile_definitions(termin_inspect_python PRIVATE TERMIN_INSPECT_CPP_EXPORTS)
+    endif()
+
+    add_library(termin_inspect::termin_inspect_python ALIAS termin_inspect_python)
+
+    set_target_properties(termin_inspect_python PROPERTIES
+        POSITION_INDEPENDENT_CODE ON
+        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+        ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+        EXPORT_NAME termin_inspect_python
+    )
+
+    target_include_directories(termin_inspect_python
+        PUBLIC
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+            $<INSTALL_INTERFACE:include>
+        PRIVATE
+            ${nanobind_INCLUDE_DIR}
+    )
+
+    target_link_libraries(termin_inspect_python
+        PUBLIC
+            termin_inspect
+        PRIVATE
+            nanobind
+            Python::Python
+    )
 endif()
 
 if(WIN32)
@@ -115,11 +143,11 @@ else()
 endif()
 
 # _inspect_native Python module (InspectRegistry, Kind system)
-if(TI_BUILD_PYTHON AND nanobind_FOUND)
+if(TERMIN_INSPECT_BUILD_PYTHON AND nanobind_FOUND)
     nanobind_add_module(_inspect_native NB_SHARED
         python/bindings/inspect_module.cpp
     )
-    target_link_libraries(_inspect_native PRIVATE termin_inspect)
+    target_link_libraries(_inspect_native PRIVATE termin_inspect_python)
 
     set(TI_PY_RPATH "$ORIGIN;$ORIGIN/..;$ORIGIN/../..;$ORIGIN/../../..")
     set_target_properties(_inspect_native PROPERTIES
@@ -148,9 +176,9 @@ if(TI_BUILD_TESTS)
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
     )
 
-    if(TI_BUILD_PYTHON)
+    if(TERMIN_INSPECT_BUILD_PYTHON)
         add_executable(termin_inspect_python_test tests/test_python_inspect.cpp)
-        target_link_libraries(termin_inspect_python_test PRIVATE termin_inspect Python::Python nanobind)
+        target_link_libraries(termin_inspect_python_test PRIVATE termin_inspect_python Python::Python nanobind)
         target_include_directories(termin_inspect_python_test PRIVATE ${nanobind_INCLUDE_DIR})
         add_test(NAME termin_inspect_python_test COMMAND termin_inspect_python_test)
         set_target_properties(termin_inspect_python_test PROPERTIES
@@ -180,7 +208,16 @@ install(TARGETS termin_inspect
     RUNTIME DESTINATION bin
 )
 
-if(TI_BUILD_PYTHON AND TARGET nanobind)
+if(TERMIN_INSPECT_BUILD_PYTHON)
+    install(TARGETS termin_inspect_python
+        EXPORT termin_inspectTargets
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+        RUNTIME DESTINATION bin
+    )
+endif()
+
+if(TERMIN_INSPECT_BUILD_PYTHON AND TARGET nanobind)
     install(TARGETS nanobind
         EXPORT termin_inspectTargets
         LIBRARY DESTINATION lib

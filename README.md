@@ -19,7 +19,7 @@
 cmake -S . -B build \
   -DCMAKE_BUILD_TYPE=Release \
   -DTI_BUILD_TESTS=ON \
-  -DTI_BUILD_PYTHON=ON \
+  -DTERMIN_INSPECT_BUILD_PYTHON=ON \
   -DCMAKE_PREFIX_PATH=/path/to/termin-base/install
 
 cmake --build build --parallel
@@ -29,7 +29,7 @@ ctest --test-dir build --output-on-failure
 Без Python bridge:
 
 ```bash
-cmake -S . -B build -DTI_BUILD_PYTHON=OFF ...
+cmake -S . -B build -DTERMIN_INSPECT_BUILD_PYTHON=OFF ...
 ```
 
 ## Документация
