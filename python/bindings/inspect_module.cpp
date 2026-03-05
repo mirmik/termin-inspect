@@ -342,4 +342,13 @@ NB_MODULE(_inspect_native, m) {
             tc::InspectRegistry_add_button(self, type_name, path, label, std::move(action));
         }, nb::arg("type_name"), nb::arg("path"), nb::arg("label"), nb::arg("action"),
            "Add a button field to a type");
+
+    // Register atexit handler to clear Python objects before interpreter shutdown.
+    // KindRegistryPython is a static singleton — its destructor runs after
+    // Python finalization, causing segfault when releasing nb::object refs.
+    nb::object atexit_mod = nb::module_::import_("atexit");
+    nb::object cleanup_fn = nb::cpp_function([]() {
+        tc::KindRegistry::instance().clear_python();
+    });
+    atexit_mod.attr("register")(cleanup_fn);
 }
