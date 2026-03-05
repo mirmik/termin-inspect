@@ -6,6 +6,7 @@
 #include <nanobind/stl/string.h>
 #include <nanobind/stl/vector.h>
 #include <cstdint>
+#include <cstdio>
 #include <vector>
 #include <functional>
 
@@ -68,6 +69,34 @@ static void register_builtin_kind_handlers() {
         }),
         nb::cpp_function([](nb::object data) -> nb::object {
             return data;
+        })
+    );
+
+    // layer_mask kind handler - stores 64-bit mask as hex string to avoid int64 overflow
+    tc::KindRegistry::instance().register_python(
+        "layer_mask",
+        nb::cpp_function([](nb::object obj) -> nb::object {
+            if (nb::isinstance<nb::str>(obj)) {
+                return obj;
+            }
+            uint64_t mask = nb::cast<uint64_t>(obj);
+            char buf[32];
+            snprintf(buf, sizeof(buf), "0x%llx", static_cast<unsigned long long>(mask));
+            return nb::str(buf);
+        }),
+        nb::cpp_function([](nb::object data) -> nb::object {
+            if (nb::isinstance<nb::str>(data)) {
+                std::string s = nb::cast<std::string>(data);
+                uint64_t mask = 0;
+                try {
+                    size_t idx = 0;
+                    mask = std::stoull(s, &idx, 0);
+                } catch (...) {
+                    mask = 0;
+                }
+                return nb::int_(mask);
+            }
+            return nb::int_(nb::cast<uint64_t>(data));
         })
     );
 }
