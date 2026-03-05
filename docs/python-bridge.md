@@ -1,7 +1,7 @@
 # Python bridge
 
 Python bridge построен на nanobind и добавляет inspect/kind поддержку для Python-классов.
-Включается опцией `TI_BUILD_PYTHON=ON` при сборке.
+Включается опцией `TERMIN_BUILD_PYTHON=ON` при сборке.
 
 ## Архитектура
 

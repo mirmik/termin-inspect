@@ -24,7 +24,7 @@ Core ничего не знает о содержимом контекста: э
 ## Python bridge
 
 - Python runtime должен быть инициализирован **до** `init_python_lang_vtable()`.
-- При сборке с `TI_BUILD_PYTHON=ON` в системе должны быть nanobind и Python dev headers.
+- При сборке с `TERMIN_BUILD_PYTHON=ON` в системе должны быть nanobind и Python dev headers.
 - GIL должен быть захвачен при вызовах Python inspect из C++ потоков.
 
 ## Fail-soft поведение

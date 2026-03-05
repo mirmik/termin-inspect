@@ -30,4 +30,4 @@
 Зависимости:
 
 - `termin_base` (типы, `tc_value`, логирование)
-- опционально Python + nanobind (если включён `TI_BUILD_PYTHON`)
+- опционально Python + nanobind (если включён `TERMIN_BUILD_PYTHON`)

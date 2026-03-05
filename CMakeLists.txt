@@ -9,11 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 option(TI_BUILD_SHARED "Build shared library" ON)
 option(TI_BUILD_TESTS "Build tests" ON)
 option(TI_BUILD_CPP "Build C++ inspect/kind core runtime" ON)
-option(TERMIN_INSPECT_BUILD_PYTHON "Build Python/nanobind inspect bridge" OFF)
-# Backward-compatible alias
-if(DEFINED TI_BUILD_PYTHON)
-    set(TERMIN_INSPECT_BUILD_PYTHON ${TI_BUILD_PYTHON})
-endif()
+option(TERMIN_BUILD_PYTHON "Build Python/nanobind inspect bridge" OFF)
 
 set(TI_SOURCES
     src/tc_inspect.c
@@ -46,7 +42,7 @@ set(TI_HEADERS
 
 find_package(termin_base REQUIRED)
 
-if(TERMIN_INSPECT_BUILD_PYTHON)
+if(TERMIN_BUILD_PYTHON)
     if(NOT Python_EXECUTABLE)
         if(WIN32)
             set(Python_EXECUTABLE "python")
@@ -96,7 +92,7 @@ target_include_directories(termin_inspect
 )
 target_link_libraries(termin_inspect PUBLIC tcbase::termin_base)
 
-if(TERMIN_INSPECT_BUILD_PYTHON)
+if(TERMIN_BUILD_PYTHON)
     if(TI_BUILD_SHARED)
         add_library(termin_inspect_python SHARED ${TI_PY_SOURCES})
         target_compile_definitions(termin_inspect_python PRIVATE TC_EXPORTS TERMIN_INSPECT_CPP_EXPORTS)
@@ -143,7 +139,7 @@ else()
 endif()
 
 # _inspect_native Python module (InspectRegistry, Kind system)
-if(TERMIN_INSPECT_BUILD_PYTHON AND nanobind_FOUND)
+if(TERMIN_BUILD_PYTHON AND nanobind_FOUND)
     nanobind_add_module(_inspect_native NB_SHARED
         python/bindings/inspect_module.cpp
     )
@@ -176,7 +172,7 @@ if(TI_BUILD_TESTS)
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
     )
 
-    if(TERMIN_INSPECT_BUILD_PYTHON)
+    if(TERMIN_BUILD_PYTHON)
         add_executable(termin_inspect_python_test tests/test_python_inspect.cpp)
         target_link_libraries(termin_inspect_python_test PRIVATE termin_inspect_python Python::Python nanobind)
         target_include_directories(termin_inspect_python_test PRIVATE ${nanobind_INCLUDE_DIR})
@@ -208,7 +204,7 @@ install(TARGETS termin_inspect
     RUNTIME DESTINATION bin
 )
 
-if(TERMIN_INSPECT_BUILD_PYTHON)
+if(TERMIN_BUILD_PYTHON)
     install(TARGETS termin_inspect_python
         EXPORT termin_inspectTargets
         LIBRARY DESTINATION lib
@@ -217,7 +213,7 @@ if(TERMIN_INSPECT_BUILD_PYTHON)
     )
 endif()
 
-if(TERMIN_INSPECT_BUILD_PYTHON AND TARGET nanobind)
+if(TERMIN_BUILD_PYTHON AND TARGET nanobind)
     install(TARGETS nanobind
         EXPORT termin_inspectTargets
         LIBRARY DESTINATION lib

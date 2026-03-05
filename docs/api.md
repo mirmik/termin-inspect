@@ -8,8 +8,8 @@
 | `include/inspect/tc_kind.h` | C dispatcher: kind serialize/deserialize |
 | `include/tc_inspect_cpp.hpp` | C++ InspectRegistry, макросы регистрации |
 | `include/inspect/tc_kind_cpp.hpp` | C++ KindRegistryCpp |
-| `include/inspect/tc_inspect_python.hpp` | Python inspect bridge (при `TI_BUILD_PYTHON=ON`) |
-| `include/inspect/tc_kind_python.hpp` | Python kind bridge (при `TI_BUILD_PYTHON=ON`) |
+| `include/inspect/tc_inspect_python.hpp` | Python inspect bridge (при `TERMIN_BUILD_PYTHON=ON`) |
+| `include/inspect/tc_kind_python.hpp` | Python kind bridge (при `TERMIN_BUILD_PYTHON=ON`) |
 
 ## Точки инициализации
 
