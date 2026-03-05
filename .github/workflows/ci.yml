@@ -38,7 +38,7 @@ jobs:
             -DCMAKE_INSTALL_PREFIX=/opt/termin \
             -DCMAKE_PREFIX_PATH=/opt/termin \
             -DTI_BUILD_TESTS=ON \
-            -DTI_BUILD_PYTHON=ON
+            -DTERMIN_BUILD_PYTHON=ON
           cmake --build build --parallel
           sudo cmake --install build
 
