@@ -67,7 +67,7 @@ if(TI_BUILD_PYTHON)
         OUTPUT_STRIP_TRAILING_WHITESPACE
     )
     find_package(nanobind CONFIG REQUIRED)
-    nanobind_build_library(nanobind-static)
+    nanobind_build_library(nanobind)
 endif()
 
 if(TI_BUILD_SHARED)
@@ -101,7 +101,7 @@ target_link_libraries(termin_inspect PUBLIC tcbase::termin_base)
 if(TI_BUILD_PYTHON)
     # Python C-API symbols are referenced from libtermin_inspect itself,
     # so Python must be visible for downstream link steps as well.
-    target_link_libraries(termin_inspect PRIVATE nanobind-static PUBLIC Python::Python)
+    target_link_libraries(termin_inspect PRIVATE nanobind PUBLIC Python::Python)
 endif()
 
 if(WIN32)
@@ -116,7 +116,7 @@ endif()
 
 # _inspect_native Python module (InspectRegistry, Kind system)
 if(TI_BUILD_PYTHON AND nanobind_FOUND)
-    nanobind_add_module(_inspect_native
+    nanobind_add_module(_inspect_native NB_SHARED
         python/bindings/inspect_module.cpp
     )
     target_link_libraries(_inspect_native PRIVATE termin_inspect)
@@ -150,7 +150,7 @@ if(TI_BUILD_TESTS)
 
     if(TI_BUILD_PYTHON)
         add_executable(termin_inspect_python_test tests/test_python_inspect.cpp)
-        target_link_libraries(termin_inspect_python_test PRIVATE termin_inspect Python::Python nanobind-static)
+        target_link_libraries(termin_inspect_python_test PRIVATE termin_inspect Python::Python nanobind)
         target_include_directories(termin_inspect_python_test PRIVATE ${nanobind_INCLUDE_DIR})
         add_test(NAME termin_inspect_python_test COMMAND termin_inspect_python_test)
         set_target_properties(termin_inspect_python_test PROPERTIES
@@ -179,6 +179,14 @@ install(TARGETS termin_inspect
     ARCHIVE DESTINATION lib
     RUNTIME DESTINATION bin
 )
+
+if(TI_BUILD_PYTHON AND TARGET nanobind)
+    install(TARGETS nanobind
+        EXPORT termin_inspectTargets
+        LIBRARY DESTINATION lib
+        RUNTIME DESTINATION bin
+    )
+endif()
 
 install(DIRECTORY include/ DESTINATION include)
 
