@@ -51,7 +51,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          DESTDIR=/tmp/staging cmake --install build
+          sudo DESTDIR=/tmp/staging cmake --install build
           tar czf /tmp/sdk-inspect.tar.gz -C /tmp/staging opt/termin
           gh release create sdk-latest --title "SDK (latest)" --notes "Auto-built from $(git rev-parse --short HEAD)" --prerelease 2>/dev/null || true
           gh release upload sdk-latest /tmp/sdk-inspect.tar.gz --clobber
