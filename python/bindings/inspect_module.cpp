@@ -344,10 +344,11 @@ NB_MODULE(_inspect_native, m) {
            "Add a button field to a type");
 
     // Register atexit handler to clear Python objects before interpreter shutdown.
-    // KindRegistryPython is a static singleton — its destructor runs after
-    // Python finalization, causing segfault when releasing nb::object refs.
+    // Static singletons (KindRegistryPython, g_ptr_extractors) have destructors
+    // that run after Python finalization, causing segfault on nb::object release.
     nb::object atexit_mod = nb::module_::import_("atexit");
     nb::object cleanup_fn = nb::cpp_function([]() {
+        g_ptr_extractors.clear();
         tc::KindRegistry::instance().clear_python();
     });
     atexit_mod.attr("register")(cleanup_fn);
