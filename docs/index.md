@@ -17,10 +17,11 @@
 | 3  | [Inspect Dispatcher](inspect-dispatcher.md) | Get/set/serialize через language vtable |
 | 4  | [Kind System](kind-system.md) | Языковые реестры типов |
 | 5  | [C++ API](cpp-api.md) | InspectRegistry, KindRegistryCpp, макросы |
-| 6  | [Python bridge](python-bridge.md) | Регистрация Python-классов |
-| 7  | [Интеграция](integration.md) | CMake, runtime, порядок инициализации |
-| 8  | [API Reference](api.md) | Публичные заголовки и точки входа |
-| 9  | [Ограничения и gotchas](gotchas.md) | Подводные камни |
+| 6  | [Наследование](inheritance.md) | Цепочки типов, разрешение полей |
+| 7  | [Python bridge](python-bridge.md) | Регистрация Python-классов |
+| 8  | [Интеграция](integration.md) | CMake, runtime, порядок инициализации |
+| 9  | [API Reference](api.md) | Публичные заголовки и точки входа |
+| 10 | [Ограничения и gotchas](gotchas.md) | Подводные камни |
 
 ## Scope
 

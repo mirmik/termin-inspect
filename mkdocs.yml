@@ -22,6 +22,7 @@ nav:
   - Inspect Dispatcher: inspect-dispatcher.md
   - Kind System: kind-system.md
   - C++ API: cpp-api.md
+  - Наследование: inheritance.md
   - Python bridge: python-bridge.md
   - Интеграция: integration.md
   - API Reference: api.md

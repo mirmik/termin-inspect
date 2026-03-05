@@ -119,6 +119,24 @@ else()
     target_compile_options(termin_inspect PRIVATE -Wall -Wextra -Wno-stringop-truncation)
 endif()
 
+# _inspect_native Python module (InspectRegistry, Kind system)
+if(TI_BUILD_PYTHON AND nanobind_FOUND)
+    nanobind_add_module(_inspect_native
+        python/bindings/inspect_module.cpp
+    )
+    target_link_libraries(_inspect_native PRIVATE termin_inspect)
+
+    set(TI_PY_RPATH "$ORIGIN;$ORIGIN/..;$ORIGIN/../..;$ORIGIN/../../..")
+    set_target_properties(_inspect_native PROPERTIES
+        INSTALL_RPATH "${TI_PY_RPATH}"
+        BUILD_WITH_INSTALL_RPATH TRUE
+    )
+
+    if(TI_PYTHON_PREFIX)
+        install(TARGETS _inspect_native DESTINATION ${TI_PYTHON_PREFIX}/inspect)
+    endif()
+endif()
+
 if(TI_BUILD_TESTS)
     enable_testing()
     add_executable(termin_inspect_c_test tests/test_main.c)
