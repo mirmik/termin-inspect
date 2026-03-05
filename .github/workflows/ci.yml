@@ -38,7 +38,8 @@ jobs:
             -DCMAKE_INSTALL_PREFIX=/opt/termin \
             -DCMAKE_PREFIX_PATH=/opt/termin \
             -DTI_BUILD_TESTS=ON \
-            -DTERMIN_BUILD_PYTHON=ON
+            -DTERMIN_BUILD_PYTHON=ON \
+            -DPython_EXECUTABLE=$(which python3)
           cmake --build build --parallel
           sudo cmake --install build
 
