@@ -11,7 +11,7 @@
 
 // DLL export/import macros for termin-inspect Python bridge
 #ifdef _WIN32
-    #ifdef TERMIN_INSPECT_CPP_EXPORTS
+    #ifdef TERMIN_INSPECT_PYTHON_EXPORTS
         #define TC_KIND_PYTHON_API __declspec(dllexport)
     #else
         #define TC_KIND_PYTHON_API __declspec(dllimport)

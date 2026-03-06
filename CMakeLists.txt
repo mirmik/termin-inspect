@@ -29,13 +29,16 @@ set(TI_PY_SOURCES
     src/tc_inspect_python.cpp
 )
 
-set(TI_HEADERS
+set(TI_CORE_HEADERS
     include/tc_types.h
     include/tc_value.h
     include/tc_inspect_cpp.hpp
     include/inspect/tc_inspect.h
     include/inspect/tc_kind.h
     include/inspect/tc_kind_cpp.hpp
+)
+
+set(TI_PY_HEADERS
     include/inspect/tc_kind_python.hpp
     include/inspect/tc_inspect_python.hpp
 )
@@ -68,10 +71,10 @@ if(TERMIN_BUILD_PYTHON)
 endif()
 
 if(TI_BUILD_SHARED)
-    add_library(termin_inspect SHARED ${TI_SOURCES} ${TI_CPP_SOURCES} ${TI_HEADERS})
+    add_library(termin_inspect SHARED ${TI_SOURCES} ${TI_CPP_SOURCES} ${TI_CORE_HEADERS})
     target_compile_definitions(termin_inspect PRIVATE TC_EXPORTS TERMIN_INSPECT_CPP_EXPORTS)
 else()
-    add_library(termin_inspect STATIC ${TI_SOURCES} ${TI_CPP_SOURCES} ${TI_HEADERS})
+    add_library(termin_inspect STATIC ${TI_SOURCES} ${TI_CPP_SOURCES} ${TI_CORE_HEADERS})
     target_compile_definitions(termin_inspect PRIVATE TERMIN_INSPECT_CPP_EXPORTS)
 endif()
 
@@ -94,14 +97,15 @@ target_link_libraries(termin_inspect PUBLIC tcbase::termin_base)
 
 if(TERMIN_BUILD_PYTHON)
     if(TI_BUILD_SHARED)
-        add_library(termin_inspect_python SHARED ${TI_PY_SOURCES})
-        target_compile_definitions(termin_inspect_python PRIVATE TC_EXPORTS TERMIN_INSPECT_CPP_EXPORTS)
+        add_library(termin_inspect_python SHARED ${TI_PY_SOURCES} ${TI_PY_HEADERS})
+        target_compile_definitions(termin_inspect_python PRIVATE TC_EXPORTS TERMIN_INSPECT_PYTHON_EXPORTS)
     else()
-        add_library(termin_inspect_python STATIC ${TI_PY_SOURCES})
-        target_compile_definitions(termin_inspect_python PRIVATE TERMIN_INSPECT_CPP_EXPORTS)
+        add_library(termin_inspect_python STATIC ${TI_PY_SOURCES} ${TI_PY_HEADERS})
+        target_compile_definitions(termin_inspect_python PRIVATE TERMIN_INSPECT_PYTHON_EXPORTS)
     endif()
 
     add_library(termin_inspect::termin_inspect_python ALIAS termin_inspect_python)
+    add_library(termin_inspect::termin_inspect_binding ALIAS termin_inspect_python)
 
     set_target_properties(termin_inspect_python PROPERTIES
         POSITION_INDEPENDENT_CODE ON
