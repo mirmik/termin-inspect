@@ -56,18 +56,7 @@ if(TERMIN_BUILD_PYTHON)
 
     find_package(Python 3.8 COMPONENTS Interpreter Development REQUIRED)
 
-    execute_process(
-        COMMAND ${Python_EXECUTABLE} -m nanobind --include_dir
-        OUTPUT_VARIABLE nanobind_INCLUDE_DIR
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-    )
-    execute_process(
-        COMMAND ${Python_EXECUTABLE} -m nanobind --cmake_dir
-        OUTPUT_VARIABLE nanobind_DIR
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-    )
     find_package(nanobind CONFIG REQUIRED)
-    nanobind_build_library(nanobind)
 endif()
 
 if(TI_BUILD_SHARED)
@@ -120,7 +109,7 @@ if(TERMIN_BUILD_PYTHON)
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
             $<INSTALL_INTERFACE:include>
         PRIVATE
-            ${nanobind_INCLUDE_DIR}
+            ${NB_DIR}/include
     )
 
     target_link_libraries(termin_inspect_python
@@ -185,7 +174,7 @@ if(TI_BUILD_TESTS)
     if(TERMIN_BUILD_PYTHON)
         add_executable(termin_inspect_python_test tests/test_python_inspect.cpp)
         target_link_libraries(termin_inspect_python_test PRIVATE termin_inspect_python Python::Python nanobind)
-        target_include_directories(termin_inspect_python_test PRIVATE ${nanobind_INCLUDE_DIR})
+        target_include_directories(termin_inspect_python_test PRIVATE ${NB_DIR}/include)
         add_test(NAME termin_inspect_python_test COMMAND termin_inspect_python_test)
         set_target_properties(termin_inspect_python_test PROPERTIES
             RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
@@ -223,13 +212,6 @@ if(TERMIN_BUILD_PYTHON)
     )
 endif()
 
-if(TERMIN_BUILD_PYTHON AND TARGET nanobind)
-    install(TARGETS nanobind
-        EXPORT termin_inspectTargets
-        LIBRARY DESTINATION lib
-        RUNTIME DESTINATION bin
-    )
-endif()
 
 install(DIRECTORY include/ DESTINATION include)
 
